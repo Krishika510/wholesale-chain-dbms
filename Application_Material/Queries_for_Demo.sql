@@ -202,13 +202,13 @@ VALUES ('5002', '3', 'David', 'Smith', '5501, F Street, NC', 'David5002@gmail.co
 
 INSERT INTO Merchandise(ProductID, SupplierID, ProductName, ProductionDate, ExpirationDate, MarketPrice, BuyPrice, 
 	TotalQuantity)
-VALUES ('3001', '4001', 'AAA Paper Towels', '2020-01-01', '2025-01-01', '20', '10', '250');
+VALUES ('3001', '4001', 'AAA Paper Towels', '2020-01-01', '2025-01-01', '20', '10', '0');
 
 INSERT INTO Merchandise(ProductID, SupplierID, ProductName, ProductionDate, ExpirationDate, MarketPrice, BuyPrice, TotalQuantity)
-VALUES ('3002', '4002', 'BBB Hand soap', '2020-01-01', '2022-01-01', '10', '5', '200');
+VALUES ('3002', '4002', 'BBB Hand soap', '2020-01-01', '2022-01-01', '10', '5', '0');
 
 INSERT INTO Merchandise(ProductID, SupplierID, ProductName, ProductionDate, ExpirationDate, MarketPrice, BuyPrice, TotalQuantity)
-VALUES ('3003', '4002', 'CCC Red Wine', '2021-01-01', '2022-01-01', '30', '15', '100');
+VALUES ('3003', '4002', 'CCC Red Wine', '2021-01-01', '2022-01-01', '30', '15', '0');
 
 INSERT INTO Transaction(TransactionID, StoreID, CustomerID, CashierStaffID, PurchaseDate, TotalAmount)
 VALUES ('6001', '2001', '5002', '1003', '2020-05-01', 100);
