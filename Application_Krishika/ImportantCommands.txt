@@ -1,0 +1,14 @@
+SSH into REMOTE
+ssh kmshivna@remote.eos.ncsu.edu
+
+START MARIADB
+add mysql
+add jdk
+mysql -u kmshivna -p -h classdb2.csc.ncsu.edu
+
+SCP
+scp commitTransaction.java kmshivna@remote.eos.ncsu.edu:/afs/unity.ncsu.edu/users/k/kmshivna
+
+RUN JAVA FILE
+javac firstExample.java
+java firstExample
