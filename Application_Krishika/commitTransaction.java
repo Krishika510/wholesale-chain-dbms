@@ -1,6 +1,6 @@
 import java.sql.*;
 import java.util.Scanner;
-import java.time.LocalDate;
+import java.util.Date;
 
 public class commitTransaction {
 
@@ -14,7 +14,7 @@ private static final String user = "kmshivna";
 private static final String password = "200368095";
 
 public static void main(String[] args) {
-try {
+    try {
 // Loading the driver. This creates an instance of the driver
 // and calls the registerDriver method to make MySql(MariaDB) Thin available to clients.
 
@@ -23,7 +23,9 @@ Class.forName("org.mariadb.jdbc.Driver");
 
 Connection connection = null;
 Statement statement = null;
-ResultSet result = null;
+ResultSet resultcontains = null;
+ResultSet resultProductInfo = null;
+ResultSet resultProductInfo2 = null;
 
 Scanner input = new Scanner(System.in);
 
@@ -87,28 +89,34 @@ Scanner input = new Scanner(System.in);
             sqlInsert2 = String.format(sqlInsert2, transactionID, productID, quantity);
 
             int j = statement.executeUpdate(sqlInsert2);
-            System.out.format("%d Row(s) inserted in contains table for Transaction ID %d, Product ID %d, quantity %d : ",j, transactionID, productID, quantity);
+            System.out.format("%d Row(s) inserted in contains table for Transaction ID %d, Product ID %d, quantity %d.",j, transactionID, productID, quantity);
             
         }
 
+        //Get items of a transaction
         String sqlSelect1 = "Select ProductID, ProdSellQty from contains where TransactionID =" + transactionID;
-        result = statement.executeQuery(sqlSelect1);
+        resultcontains = statement.executeQuery(sqlSelect1);
 
         double total = 0;
         double discount = 1;
 
-        while (result.next()) {
-        int p = result.getInt("ProductID");
-        int n = result.getInt("ProdSellQty");
+        while (resultcontains.next()) {
+        int p = resultcontains.getInt("ProductID");
+        int n = resultcontains.getInt("ProdSellQty");
 
-        String sqlSelect2 = "select SellingPrice, DiscountInfo, SaleStartDate, SaleEndDate from productInfo where ProductID = %d and StoreID = %d";
-        String.format(sqlSelect2, p, storeID);
+        // Get product Info of the product in the store.
+        String sqlSelect2 = "SELECT SellingPrice, DiscountInfo, SaleStartDate, SaleEndDate, StoreQuantity FROM productInfo WHERE ProductID = %d AND StoreID = %d";
+        sqlSelect2 = String.format(sqlSelect2, p, storeID);
 
-        result = statement.executeQuery(sqlSelect2);
-            while (result.next()) {
-                double price = result.getFloat("SellingPrice");
-                if (result.getDate("SaleStartDate").compareTo(java.time.LocalDate.now()) < 0 && result.getDate("SaleEndDate").compareTo(java.time.LocalDate.now()) > 0) {
-                    discount = result.getFloat("DiscountInfo");
+        resultProductInfo = statement.executeQuery(sqlSelect2);
+            while (resultProductInfo.next()) {
+                double price = resultProductInfo.getFloat("SellingPrice");
+                java.sql.Date startDate = resultProductInfo.getDate("SaleStartDate");
+                java.sql.Date endDate = resultProductInfo.getDate("SaleEndDate");
+                Date currDate = new Date();
+
+                if (startDate.compareTo(currDate) < 0 && endDate.compareTo(currDate) > 0) {
+                    discount = resultProductInfo.getFloat("DiscountInfo");
                 }
                 total += discount*price*n;
             }
@@ -117,18 +125,35 @@ Scanner input = new Scanner(System.in);
         sqlUpdate = String.format(sqlUpdate,total,transactionID);
         statement.executeQuery(sqlUpdate);
 
-        while (result.next()) {
-            int p = result.getInt("ProductID");
-            String sqlUpdate1 = "UPDATE productInfo SET StoreQuantity = StoreQuantity - quantity where ProductID = %d and StoreID = %d";
-            sqlUpdate1 = String.format(sqlUpdate1, p, storeID);
+        // Subtract quantity from productInfo table.
+        resultcontains = statement.executeQuery(sqlSelect1);
+        while (resultcontains.next()) {
+
+            int p = resultcontains.getInt("ProductID");
+            int sellQuantity = resultcontains.getInt("ProdSellQty");
+            System.out.format("Quantity sold for Product ID %d = %d", p, sellQuantity);
+
+            String sqlSelect3 = "SELECT StoreQuantity FROM productInfo WHERE ProductID = %d AND StoreID = %d";
+            sqlSelect3 = String.format(sqlSelect3, p, storeID);
+
+            resultProductInfo2 = statement.executeQuery(sqlSelect3);
+            while(resultProductInfo2.next()) {
+
+            int existingQuantity = resultProductInfo2.getInt("StoreQuantity");
+            int remainingQuantity = existingQuantity - sellQuantity;
+
+            String sqlUpdate1 = "UPDATE productInfo SET StoreQuantity = %d where ProductID = %d and StoreID = %d";
+            sqlUpdate1 = String.format(sqlUpdate1, remainingQuantity, p, storeID);
             statement.executeQuery(sqlUpdate1);
+        }
         }
 
         //End Transaction
         connection.commit();
 
 } finally {
-    close(result);
+    close(resultcontains);
+    close(resultProductInfo);
     close(statement);
     close(connection);
     }
@@ -158,4 +183,6 @@ static void close(Connection connection) {
         }
     }
 }
+
+
                                         
