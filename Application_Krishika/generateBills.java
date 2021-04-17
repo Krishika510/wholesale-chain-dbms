@@ -38,7 +38,7 @@ public static void main(String[] args) {
 
 			    statement = connection.createStatement();
 
-			    String sqlSelect = "Select Amount from generateBills where SupplierID =" + supplierID;
+			    String sqlSelect = "SELECT Amount FROM generateBills WHERE SupplierID =" + supplierID;
 			    resultSelect = statement.executeQuery(sqlSelect);
 
 			    while(resultSelect.next()) {
@@ -47,7 +47,7 @@ public static void main(String[] args) {
 
 			    System.out.format("Generated bill amount of %d for Supplier ID %d", amount, supplierID);
 
-			    String sqlUpdate = "UPDATE generateBills set Amount = 0 and IsBilled = True where SupplierID = %d";
+			    String sqlUpdate = "UPDATE generateBills SET Amount = 0 AND IsBilled = TRUE WHERE SupplierID = %d";
 			    sqlUpdate = String.format(sqlUpdate, supplierID);
     			statement.executeQuery(sqlUpdate);
 		}
