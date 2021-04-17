@@ -1,7 +1,8 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.util.Calendar;
 
-public class generateBills {
+public class generateRewardChecks {
 
 // Update your user info alone here
 private static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/kmshivna";
@@ -21,8 +22,10 @@ public static void main(String[] args) {
 
 		Connection connection = null;
 		Statement statement = null;
-		ResultSet resultSelect = null;
+		ResultSet resultCustomer = null;
+		ResultSet resultCashback = null;
 		int amount = 0;
+		int year = Calendar.getInstance().get(Calendar.YEAR);
 
 		Scanner input = new Scanner(System.in);
 
@@ -33,26 +36,38 @@ public static void main(String[] args) {
 			    // DriverManager list that recognizes the URL jdbcURL
 			    connection = DriverManager.getConnection(jdbcURL, user, password);
 
-			    System.out.println("Enter Supplier ID: ");
-			    int supplierID = input.nextInt();
-
 			    statement = connection.createStatement();
 
-			    String sqlSelect = "SELECT Amount FROM generateBills WHERE SupplierID =" + supplierID;
-			    resultSelect = statement.executeQuery(sqlSelect);
+			    String sqlSelect = "SELECT CustomerID FROM ClubMembers WHERE LevelID = 3;";
+			    resultCustomer = statement.executeQuery(sqlSelect);
 
-			    while(resultSelect.next()) {
-			    	amount = resultSelect.getInt("Amount");
+			    while(resultCustomer.next()) {
+			    	int customerID = resultCustomer.getInt("CustomerID");
+			    	System.out.println(year);
+			    	String sqlSelect2 = "SELECT 0.02 * SUM(TotalAmount) as Cashback FROM Transaction WHERE CustomerID = %d AND YEAR(PurchaseDate) = '%d'";
+			    	sqlSelect2 = String.format(sqlSelect2, customerID, year);
+
+			    	resultCashback = statement.executeQuery(sqlSelect2);
+
+			    	while(resultCashback.next()) {
+			    		int cashback = resultCashback.getInt("Cashback");
+			    		String sqlUpdate = "UPDATE ClubMembers SET Cashback = %d WHERE CustomerID = %d";
+				    	sqlUpdate = String.format(sqlUpdate, cashback, customerID);
+				    	statement.executeQuery(sqlUpdate);
+
+				    	System.out.format("Generated cashback reward of %d for Customer ID %d", cashback, customerID);
+			    	}
+
+			    	
+
 			    }
 
-			    System.out.format("Generated bill amount of %d for Supplier ID %d", amount, supplierID);
+			    
 
-			    String sqlUpdate = "UPDATE generateBills SET Amount = 0 AND IsBilled = TRUE WHERE SupplierID = %d";
-			    sqlUpdate = String.format(sqlUpdate, supplierID);
-    			statement.executeQuery(sqlUpdate);
 		}
 		finally {
-    close(resultSelect);
+    close(resultCustomer);
+    close(resultCashback);
     close(statement);
     close(connection);
     }
