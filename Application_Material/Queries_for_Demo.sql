@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supplier, Transaction, contains, generateBills, productInfo;
+DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supplier, Transaction, contains, generateBills, productInfo;
+DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supplier, Transaction, contains, generateBills, productInfo;
 
 CREATE TABLE Store1 (
 StoreID VARCHAR (16),
