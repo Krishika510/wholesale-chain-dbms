@@ -62,6 +62,7 @@ jdbcURL = jdbcURL + user;
 
             case 1: 
 
+                try {
                 // Take Transaction ID as input.
                 System.out.println("Enter Transaction ID:");
                 int transactionIDcommit = input.nextInt();
@@ -78,8 +79,7 @@ jdbcURL = jdbcURL + user;
                 System.out.println("Enter CustomerID:");
                 int customerID = input.nextInt();
 
-                // Begin Transaction
-                connection.setAutoCommit(false);
+                connection.setAutoCommit(false); //BEGIN TRANSACTION.
 
                 // Insert Transaction details obtained from user.
                 String sqlInsert1 = "INSERT INTO Transaction(TransactionID, StoreID, CustomerID, CashierStaffID, PurchaseDate, TotalAmount) VALUES(%d,%d,%d,%d,CURDATE(),0)";
@@ -174,11 +174,24 @@ jdbcURL = jdbcURL + user;
         }
 
 }
-                //End Transaction
-                connection.commit();
+                connection.commit(); //COMMIT TRANSACTION IF EVERYTHING IS SUCCESSFUL.
                 break;
 
+            } catch(SQLException e) {
+                System.out.println(e);
+                if (connection != null) {
+                    try {
+                        System.err.print("Transaction is being rolled back");
+                        connection.rollback(); //ROLLBACK TRANSACTION IN CASE OF A FAILURE.
+                    } catch (SQLException excep) {
+                        System.out.println(excep);
+                    }
+                }
+            }
+
         case 2:
+
+            connection.setAutoCommit(false); // BEGIN TRANSACTION
             System.out.println("Enter Transaction ID: ");
             int transactionIDreturn = input.nextInt();
 
@@ -190,9 +203,6 @@ jdbcURL = jdbcURL + user;
 
             System.out.println("Enter quantity being returned: ");
             int returnQuantity = input.nextInt();
-
-            // Begin Transaction
-            connection.setAutoCommit(false);
 
             String sqlSelectCheck = "SELECT ReturnQuantity, ProdSellQty from contains where TransactionID = %d and ProductID = %d";
             sqlSelectCheck = String.format(sqlSelectCheck, transactionIDreturn, productID);
@@ -209,25 +219,20 @@ jdbcURL = jdbcURL + user;
                     }
                 }
             }
-
             String sqlUpdateContains = "UPDATE contains SET ReturnQuantity = %d, ReturnDate = CURDATE() where TransactionID = %d and ProductID = %d";
             sqlUpdateContains = String.format(sqlUpdateContains, returnQuantity, transactionIDreturn, productID);
             statement.executeQuery(sqlUpdateContains);
 
             String sqlSelectTransaction = "SELECT StoreID, PurchaseDate FROM Transaction WHERE TransactionID = %d";
             sqlSelectTransaction = String.format(sqlSelectTransaction, transactionIDreturn);
-
             resultTransaction = statement.executeQuery(sqlSelectTransaction);
 
             while(resultTransaction.next()) {
             int storeIDreturn = resultTransaction.getInt("StoreID");
-
             java.sql.Date purchaseDate = resultTransaction.getDate("PurchaseDate");
-
             String sqlSelectproductInfo = "SELECT SaleStartDate, SaleEndDate, DiscountInfo, SellingPrice FROM productInfo where StoreID = %d and ProductID = %d";
             sqlSelectproductInfo = String.format(sqlSelectproductInfo, storeIDreturn, productID);
             ResultSet resultProductInfo3 = statement.executeQuery(sqlSelectproductInfo);
-
             double discount2 = 0;
             double total2 = 0;
 
@@ -247,10 +252,9 @@ jdbcURL = jdbcURL + user;
         String sqlUpdateTransaction = "UPDATE Transaction SET TotalAmount = TotalAmount - %f where TransactionID = %d";
         sqlUpdateTransaction = String.format(sqlUpdateTransaction, total2, transactionIDreturn);
         statement.executeQuery(sqlUpdateTransaction);
-    }
 
-                //End Transaction
-                connection.commit();
+    }
+                connection.commit(); //END TRANSACTION
                 break;
 
 }
