@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supp
 DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supplier, Transaction, contains, generateBills, productInfo;
 DROP TABLE IF EXISTS ClubMembers, Level, Merchandise, SignUp, Staff, Store, Supplier, Transaction, contains, generateBills, productInfo;
 
-CREATE TABLE Store1 (
+CREATE TABLE Store (
 StoreID VARCHAR (16),
 Address VARCHAR (1024) NOT NULL,
 PhoneNumber VARCHAR (16) NOT NULL,
