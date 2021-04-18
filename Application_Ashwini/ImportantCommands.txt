@@ -1,0 +1,14 @@
+SSH into REMOTE
+ssh aunayak@remote.eos.ncsu.edu
+
+START MARIADB
+add mysql
+add jdk
+mysql -u aunayak -p -h classdb2.csc.ncsu.edu
+
+SCP
+scp commitTransaction.java aunayak@remote.eos.ncsu.edu:/afs/unity.ncsu.edu/users/a/aunayak
+
+RUN JAVA FILE
+javac firstExample.java
+java firstExample

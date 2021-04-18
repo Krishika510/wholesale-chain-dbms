@@ -1,3 +1,4 @@
+
 CREATE TABLE Store (
 StoreID VARCHAR (16),
 Address VARCHAR (1024) NOT NULL,
