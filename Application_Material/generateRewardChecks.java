@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import java.util.Calendar;
+import java.io.Console;
 
 public class generateRewardChecks {
 
@@ -30,8 +31,8 @@ public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		System.out.println("Enter database name:");
 		user = input.nextLine();
-		System.out.println("Enter password:");
-		password = input.nextLine();
+		Console console = System.console();
+		password = new String(console.readPassword("Enter Password:\n"));
 		jdbcURL = jdbcURL + user;
 
 		// Class.forName("org.mariadb.jdbc.Driver");
