@@ -34,7 +34,7 @@ public static void main(String[] args) {
 		password = input.nextLine();
 		jdbcURL = jdbcURL + user;
 
-		Class.forName("org.mariadb.jdbc.Driver");
+		// Class.forName("org.mariadb.jdbc.Driver");
 
 		try {
 			    // Get a connection instance from the first driver in the
@@ -48,19 +48,18 @@ public static void main(String[] args) {
 
 			    while(resultCustomer.next()) {
 			    	int customerID = resultCustomer.getInt("CustomerID");
-			    	System.out.println(year);
 			    	String sqlSelect2 = "SELECT 0.02 * SUM(TotalAmount) as Cashback FROM Transaction WHERE CustomerID = %d AND YEAR(PurchaseDate) = '%d'";
 			    	sqlSelect2 = String.format(sqlSelect2, customerID, year);
 
 			    	resultCashback = statement.executeQuery(sqlSelect2);
 
 			    	while(resultCashback.next()) {
-			    		int cashback = resultCashback.getInt("Cashback");
-			    		String sqlUpdate = "UPDATE ClubMembers SET Cashback = %d WHERE CustomerID = %d";
+			    		double cashback = resultCashback.getFloat("Cashback");
+			    		String sqlUpdate = "UPDATE ClubMembers SET Cashback = %f WHERE CustomerID = %d";
 				    	sqlUpdate = String.format(sqlUpdate, cashback, customerID);
 				    	statement.executeQuery(sqlUpdate);
 
-				    	System.out.format("Generated cashback reward of %d for Customer ID %d", cashback, customerID);
+				    	System.out.format("Generated cashback reward of %f for Customer ID %d\n", cashback, customerID);
 			    	}
 
 			    	
