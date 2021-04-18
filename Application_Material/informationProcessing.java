@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.Scanner;
 import java.util.Calendar;
+import java.io.Console;
 
 public class informationProcessing {
 
@@ -33,8 +34,8 @@ ResultSet result = null;
 Scanner input = new Scanner(System.in);
 System.out.println("Enter database name:");
 user = input.nextLine();
-System.out.println("Enter password:");
-password = input.nextLine();
+Console console = System.console();
+password = new String(console.readPassword("Enter Password:\n"));
 jdbcURL = jdbcURL + user;
 
 
