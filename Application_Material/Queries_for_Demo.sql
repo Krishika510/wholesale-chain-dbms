@@ -81,9 +81,9 @@ ON UPDATE CASCADE
 
 CREATE TABLE Transaction (
 TransactionID VARCHAR (16),
-StoreID VARCHAR (16),
-CustomerID VARCHAR (16),
-CashierStaffID VARCHAR (16),
+StoreID VARCHAR (16) NOT NULL,
+CustomerID VARCHAR (16) NOT NULL,
+CashierStaffID VARCHAR (16) NOT NULL,
 PurchaseDate Date NOT NULL,
 TotalAmount DECIMAL (9, 2) NOT NULL,
 PRIMARY KEY (TransactionID),
@@ -133,16 +133,16 @@ ON UPDATE CASCADE
 CREATE TABLE contains(
 TransactionID VARCHAR(16),
 ProductID VARCHAR(16),
-WarehouseStaffID VARCHAR(16),
+CashierStaffID VARCHAR(16),
 ReturnDate DATE,
-ReturnQuantity DATE,
+ReturnQuantity INT,
 ProdSellQty INT NOT NULL,
 PRIMARY KEY(TransactionID, ProductID),
 FOREIGN KEY(TransactionID) REFERENCES Transaction(TransactionID)
 ON UPDATE CASCADE,
 FOREIGN KEY(ProductID) REFERENCES Merchandise(ProductID)
 ON UPDATE CASCADE,
-FOREIGN KEY(WarehouseStaffID) REFERENCES Staff(StaffID)
+FOREIGN KEY(CashierStaffID) REFERENCES Staff(StaffID)
 ON UPDATE CASCADE
 );
 
@@ -250,12 +250,12 @@ INSERT INTO contains (TransactionID, ProductID, ProdSellQty)
 VALUES ('6003', '3001', 10);
 
 INSERT INTO generateBills (ProductID, SupplierID, BillingStaffID, SuppliedQuantity, Amount, IsBilled)
-VALUES ('3001', '4001', '1003', 250, 2500, True);
+VALUES ('3001', '4001', '1003', 250, 2500, False);
 
 INSERT INTO generateBills (ProductID, SupplierID, BillingStaffID, SuppliedQuantity, Amount, IsBilled)
 VALUES ('3002', '4002', '1003', 200, 1000, False);
 
 INSERT INTO generateBills (ProductID, SupplierID, BillingStaffID, SuppliedQuantity, Amount, IsBilled)
-VALUES ('3003', '4002', '1003', 100, 1500, True);
+VALUES ('3003', '4002', '1003', 100, 1500, False);
 
 
