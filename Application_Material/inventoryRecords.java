@@ -10,8 +10,8 @@ private static String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/"; //
 
 // Update your user and password info here!
 
-private static final String user;
-private static final String password;
+private static String user;
+private static String password;
 
 public static void main(String[] args) {
 try {
@@ -53,6 +53,8 @@ jdbcURL = jdbcURL + user;
         switch(task){
             case 1:
             {
+                connection.setAutoCommit(false);
+
                 // Take Product ID as input
                 System.out.println("Enter Product ID:");
                 int productID = input.nextInt();
@@ -148,6 +150,8 @@ jdbcURL = jdbcURL + user;
             }
             case 2:
             {
+                connection.setAutoCommit(false);
+
                 // Take Product ID as input
                 System.out.println("Enter Product ID:");
                 int productID = input.nextInt();
@@ -186,6 +190,8 @@ jdbcURL = jdbcURL + user;
             }
             case 3:
             {
+                connection.setAutoCommit(false);
+
                  // Take Product ID as input
                 System.out.println("Enter Product ID:");
                 int productID = input.nextInt();
