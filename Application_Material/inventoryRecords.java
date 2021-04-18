@@ -6,12 +6,12 @@ public class inventoryRecords {
 
 
 // Update your user info alone here
-private static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/vksabesa"; // Using SERVICE_NAME
+private static String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/"; // Using SERVICE_NAME
 
 // Update your user and password info here!
 
-private static final String user = "vksabesa";
-private static final String password = "Qwerty@123";
+private static final String user;
+private static final String password;
 
 public static void main(String[] args) {
 try {
@@ -26,6 +26,11 @@ Statement statement = null;
 ResultSet result = null;
 
 Scanner input = new Scanner(System.in);
+System.out.println("Enter database name:");
+user = input.nextLine();
+System.out.println("Enter password:");
+password = input.nextLine();
+jdbcURL = jdbcURL + user;
 
     try {
 
