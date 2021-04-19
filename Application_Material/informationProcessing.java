@@ -140,6 +140,14 @@ jdbcURL = jdbcURL + user;
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Customer ID:");
                             String custID = input.nextLine();
+
+                            // Take Warehouse Staff ID as input.
+                            System.out.println("Enter Registration Staff ID:");
+                            String regStaffID = input.nextLine();
+                            // Take Warehouse Staff ID as input.
+                            System.out.println("Enter Store ID:");
+                            String storeID = input.nextLine();
+
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Level ID:");
                             String levelID = input.nextLine();
@@ -164,6 +172,11 @@ jdbcURL = jdbcURL + user;
                             sqlInsert1 = String.format(sqlInsert1, custID, levelID, fName, lName, homeAddress, emailAddress, phoneNumber);
                             int i = statement.executeUpdate(sqlInsert1);
                             System.out.format("%d Row inserted into Customer table\n", i);
+
+                            String sqlInsert2 = "INSERT INTO SignUp (SignUpDate, CustomerID, RegistrationStaffID, StoreID) VALUES (CURDATE(),'%s','%s','%s')";
+                            sqlInsert2 = String.format(sqlInsert2, custID, regStaffID, storeID);
+                            int j = statement.executeUpdate(sqlInsert2);
+                            System.out.format("%d Row inserted into Signup table\n", j);
                             connection.commit();
                             return;
                         }
