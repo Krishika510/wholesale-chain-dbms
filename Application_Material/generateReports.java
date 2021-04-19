@@ -159,13 +159,13 @@ jdbcURL = jdbcURL + user;
                     while(result.next()) {
 
                     // Boolean variable to check if result of query is NULL.
-                    int salesByMonth = result.getInt("Sales_by_Year");
+                    int salesByYear = result.getInt("Sales_by_Year");
                     boolean bool = result.wasNull();
                     if (bool == true) {
                         System.out.println("No results found.");
                         } else{
                             // Displays report after required computation.
-                            System.out.format("Generated report of sales by month for selection is : %d", salesByMonth);
+                            System.out.format("Generated report of sales by Year for selection is : %d", salesByYear);
                             }
                         input.nextLine();
                         }
@@ -360,7 +360,7 @@ jdbcURL = jdbcURL + user;
                 String cust_id = input.nextLine();
 
                 // Take input Year.
-                System.out.println("Enter Growth Year (YYYY): ");
+                System.out.println("Enter year (YYYY): ");
                 String report_year = input.nextLine();
 
                  // SQL query that plugs in user inputted data to generate Customer Activity report such as Total Purchase Amount for a given time period.
@@ -372,7 +372,7 @@ jdbcURL = jdbcURL + user;
                 } else {
                     result.beforeFirst();
                     while(result.next()) {
-                    int growthByMonth = result.getInt("Total_transaction");
+                    int total_transaction = result.getInt("Total_transaction");
 
                     // Boolean variable to check if result of query is NULL.
                     boolean bool = result.wasNull();
@@ -380,7 +380,7 @@ jdbcURL = jdbcURL + user;
                         System.out.println("No results found.");
                     } else{
                     // Displays report after required computation.
-                    System.out.format("Generated report of Customer Growth by month for selection is : %d", growthByMonth);
+                    System.out.format("Generated report of Customer Activity report (Total Purchase Amount) for a given time period is : %d", total_transaction);
                     }
                     input.nextLine();
                 } 
