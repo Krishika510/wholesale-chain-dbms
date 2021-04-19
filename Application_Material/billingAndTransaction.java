@@ -332,6 +332,9 @@ jdbcURL = jdbcURL + user;
         } while(!choice.equals(5));
 
 } finally {
+    close(esultProductInfo2); 
+    close(resultTransaction) 
+    close(contains);
     close(resultcontains);
     close(resultProductInfo);
     close(statement);
