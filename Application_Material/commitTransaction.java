@@ -50,7 +50,7 @@ jdbcURL = jdbcURL + user;
         do {
 
         System.out.println("\n\t\tTransaction Operations");
-        System.out.println("\t\t-----------------------------\n");
+        System.out.println("\t\t--------------------------\n");
         System.out.println("1. Add a transaction\n");
         System.out.println("2. Return a product\n");
         System.out.println("3. Exit menu\n\n");
@@ -224,8 +224,13 @@ jdbcURL = jdbcURL + user;
             String sqlSelectCheck = "SELECT ReturnQuantity, ProdSellQty from contains where TransactionID = %d and ProductID = %d";
             sqlSelectCheck = String.format(sqlSelectCheck, transactionIDreturn, productID);
             ResultSet resultCheck = statement.executeQuery(sqlSelectCheck);
+            if(resultCheck.next() == false) {
+                System.out.println("Wrong transaction ID/ProductID. Please check again.");
+                return;
+            }
 
             while (resultCheck.next()) {
+                System.out.println(resultCheck.next());
                     int earlierReturn = resultCheck.getInt("ReturnQuantity");
                     int prodSellQty = resultCheck.getInt("ProdSellQty");
 
