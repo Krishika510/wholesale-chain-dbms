@@ -92,7 +92,7 @@ jdbcURL = jdbcURL + user;
                     input.nextLine();
                                 }
                 
-                //End Transaction.
+                //End case
                 break;
             }
 
@@ -132,7 +132,7 @@ jdbcURL = jdbcURL + user;
                         }
                     }
 
-                    //End Transaction
+                    //End case
                     break;
             }
 
@@ -167,7 +167,7 @@ jdbcURL = jdbcURL + user;
                         }
                     }
                 
-                //End Transaction.
+                //End case
                 break;
             }  
 
@@ -189,17 +189,17 @@ jdbcURL = jdbcURL + user;
                 } else {
                     rs.beforeFirst();
                     while (rs.next()) {
-                     // Writing a loop to display results as columns
-                     for (int i = 1; i <= columnsNumber; i++) {
+                    for (int i = 1; i <= columnsNumber; i++) {
                          if (i > 1) System.out.print(",  ");
                          String columnValue = rs.getString(i);
                          System.out.print(columnValue + " " + rsmd.getColumnName(i));
                         }
                         System.out.println("");
                         }
+                        input.nextLine();
                     }
 
-                //End Transaction
+                //End case
                 break;
             }  
 
@@ -231,7 +231,7 @@ jdbcURL = jdbcURL + user;
                         }
                     input.nextLine();
                     }
-                //End Transaction
+                //End case
                 break;
             }   
 
@@ -265,7 +265,7 @@ jdbcURL = jdbcURL + user;
                     input.nextLine();
                     }
 
-                //End Transaction
+                //End case
                 break;
             }   
 
@@ -306,7 +306,7 @@ jdbcURL = jdbcURL + user;
                         }
                     }
               
-                //End Transaction
+                //End case
                 break;
             }     
 
@@ -342,7 +342,7 @@ jdbcURL = jdbcURL + user;
                         } 
                     }
                 
-                    //End Transaction
+                    //End case
                     break;
             }   
 
@@ -383,7 +383,7 @@ jdbcURL = jdbcURL + user;
 
                 }
               
-                //End Transaction
+                //End case
                 break;
             }    
 
@@ -407,6 +407,7 @@ jdbcURL = jdbcURL + user;
 } finally {
     // close(resultSelect);
     close(result);
+    close(rs);
     close(statement);
     close(connection);
     }
@@ -433,6 +434,13 @@ static void close(Connection connection) {
         if(result != null) {
             try {
             result.close();
+            } catch(Throwable whatever) {}
+        }
+    }
+    static void close(ResultSet rs) {
+        if(rs != null) {
+            try {
+            rs.close();
             } catch(Throwable whatever) {}
         }
     }
