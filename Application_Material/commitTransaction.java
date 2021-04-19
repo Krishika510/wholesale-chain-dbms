@@ -108,6 +108,19 @@ jdbcURL = jdbcURL + user;
                     System.out.println("Enter quantity of the ProductID: "+productID);
                     int quantity = input.nextInt();
 
+                    String sqlSelect4 = "Select StoreQuantity from productInfo where ProductID = %d AND StoreID = %d";
+                    sqlSelect4 = String.format(sqlSelect4, productID, storeIDcommit);
+
+                    ResultSet resultSelect4 = statement.executeQuery(sqlSelect4);
+
+                    while(resultSelect4.next()) {
+                        int existingStoreQuantity = resultSelect4.getInt("StoreQuantity");
+                        if (quantity > existingStoreQuantity) {
+                            System.out.format("Invalid quantity, Store quantity %d lesser than Transaction quantity %d\n", existingStoreQuantity, quantity);
+                            return;
+                        }
+
+                    }
                     // Insert into contains table.
                     String sqlInsert2 = "INSERT INTO contains (TransactionID, ProductID, ProdSellQty) VALUES (%d,%d,%d)";
 
@@ -176,16 +189,19 @@ jdbcURL = jdbcURL + user;
 
 }
                 connection.commit(); //COMMIT TRANSACTION IF EVERYTHING IS SUCCESSFUL.
+                System.out.println("Transaction updated successfully");
                 break;
 
             } catch(SQLException e) {
                 System.out.println(e);
                 if (connection != null) {
                     try {
-                        System.err.print("Transaction is being rolled back");
+                        System.err.print("There was a problem. Transaction is being rolled back");
                         connection.rollback(); //ROLLBACK TRANSACTION IN CASE OF A FAILURE.
+                        break;
                     } catch (SQLException excep) {
                         System.out.println(excep);
+                        break;
                     }
                 }
             }
@@ -210,14 +226,13 @@ jdbcURL = jdbcURL + user;
             ResultSet resultCheck = statement.executeQuery(sqlSelectCheck);
 
             while (resultCheck.next()) {
-                if (resultCheck.getInt("ReturnQuantity") != 0) {
                     int earlierReturn = resultCheck.getInt("ReturnQuantity");
                     int prodSellQty = resultCheck.getInt("ProdSellQty");
 
-                    if (earlierReturn >= prodSellQty) {
-                        System.out.println("Already returned all quantities of this item, please try some other product.");
-                        break;
-                    }
+                    if (returnQuantity > prodSellQty - earlierReturn) {
+                        System.out.println("Invalid return quantity, please enter return quantity less than or equal to sell quantity.");
+                        return;
+
                 }
             }
             String sqlUpdateContains = "UPDATE contains SET ReturnQuantity = %d, ReturnDate = CURDATE() where TransactionID = %d and ProductID = %d";
@@ -256,6 +271,7 @@ jdbcURL = jdbcURL + user;
 
     }
                 connection.commit(); //END TRANSACTION
+                System.out.println("Transaction updated successfully");
                 break;
 
 }
