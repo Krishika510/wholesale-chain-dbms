@@ -306,9 +306,10 @@ jdbcURL = jdbcURL + user;
                                 System.out.println("4. Home Address\n");
                                 System.out.println("5. Email Address\n");
                                 System.out.println("6. Employee Start Date\n");
-                                System.out.println("7. Phone Number\n");
-                                System.out.println("8. Store ID\n");
-                                System.out.println("9. Exit menu\n\n");
+                                System.out.println("7. Employee End Date\n");
+                                System.out.println("8. Phone Number\n");
+                                System.out.println("9. Store ID\n");
+                                System.out.println("10. Exit menu\n\n");
 
                                 System.out.println("Which attribute do you want to use the update operation on?");
                                 int choice = input.nextInt();
@@ -382,6 +383,17 @@ jdbcURL = jdbcURL + user;
                                     case 7:
                                     {
                                         input.nextLine();
+                                        System.out.println("Enter Employee End Date to update:");
+                                        String empEndDate = input.nextLine();
+                                        String sqlUpdate2 = "UPDATE Staff SET EmpEndDate = '%s' WHERE StaffID = %d";
+                                        sqlUpdate2 = String.format(sqlUpdate2, empEndDate, staffID);
+                                        statement.executeQuery(sqlUpdate2);
+                                        System.out.println("Staff Table Updated Successfully");
+                                        return;
+                                    }
+                                    case 8:
+                                    {
+                                        input.nextLine();
                                         System.out.println("Enter Phone Number to update:");
                                         String phno = input.nextLine();
                                         String sqlUpdate2 = "UPDATE Staff SET PhoneNumber = '%s' WHERE StaffID = %d";
@@ -390,7 +402,7 @@ jdbcURL = jdbcURL + user;
                                         System.out.println("Staff Table Updated Successfully");
                                         return;
                                     }
-                                    case 8:
+                                    case 9:
                                     {
                                         input.nextLine();
                                         System.out.println("Enter Store ID to update:");
