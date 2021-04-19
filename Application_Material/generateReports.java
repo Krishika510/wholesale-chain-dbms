@@ -64,20 +64,32 @@ jdbcURL = jdbcURL + user;
 
                 String sqlSelect = "SELECT SUM(TotalAmount) AS Sales_by_Day FROM Transaction WHERE PurchaseDate =" + "'"+ purchaseDate+"'";
                 result = statement.executeQuery(sqlSelect);
+                // System.out.println(result.next());
+                // if(result.next() == NULL){
+                //     System.out.println("No results found.");
+                // } else {
+                //     result.beforeFirst();
+                //     while(result.next()) {
+                //     int salesByDay = result.getInt("Sales_by_Day");
+                //     System.out.format("Generated report for sales by day is: %d ", salesByDay);
+                //     input.nextLine();
+                // }
 
-                if(!result.next()){
-                    System.out.println("No results found.");
-                } else {
-                    result.beforeFirst();
-                    while(result.next()) {
+                // }
+
+                while(result.next()) {             
+
                     int salesByDay = result.getInt("Sales_by_Day");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
+            
                     System.out.format("Generated report for sales by day is: %d ", salesByDay);
+                    }
+
                     input.nextLine();
-                }
-
-                }
-
-
+                                }
                 //End Transaction
                 break;
             }
@@ -99,7 +111,12 @@ jdbcURL = jdbcURL + user;
                     result.beforeFirst();
                     while(result.next()) {
                     int salesByMonth = result.getInt("Sales_by_Month");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
                     System.out.format("Generated report of sales by month for selection is : %d", salesByMonth);
+                }
                     input.nextLine();
                 }
 
@@ -124,7 +141,12 @@ jdbcURL = jdbcURL + user;
                     result.beforeFirst();
                     while(result.next()) {
                     int salesByMonth = result.getInt("Sales_by_Year");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
                     System.out.format("Generated report of sales by month for selection is : %d", salesByMonth);
+                }
                     input.nextLine();
                 }
 
@@ -159,12 +181,6 @@ jdbcURL = jdbcURL + user;
 
                 }
 
-
-
-
-
-
-                 
 
                 //End Transaction
                 break;
@@ -220,7 +236,12 @@ jdbcURL = jdbcURL + user;
                     result.beforeFirst();
                     while(result.next()) {
                     int growthByMonth = result.getInt("Number_of_enrolled_customers");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
                     System.out.format("Generated report of Customer Growth by month for selection is : %d", growthByMonth);
+                    }
                     input.nextLine();
                 }
 
@@ -248,7 +269,12 @@ jdbcURL = jdbcURL + user;
                     result.beforeFirst();
                     while(result.next()) {
                     int growthByYear = result.getInt("Number_of_enrolled_customers");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
                     System.out.format("Generated report of Customer Growth by year for selection is : %d", growthByYear);
+                    }
                     input.nextLine();
                 } 
 
@@ -277,7 +303,12 @@ jdbcURL = jdbcURL + user;
                     result.beforeFirst();
                     while(result.next()) {
                     int growthByMonth = result.getInt("Total_transaction");
+                    boolean bool = result.wasNull();
+                    if (bool == true) {
+                        System.out.println("No results found.");
+                    } else{
                     System.out.format("Generated report of Customer Growth by month for selection is : %d", growthByMonth);
+                    }
                     input.nextLine();
                 } 
 
