@@ -31,6 +31,12 @@ ResultSet resultProductInfo = null;
 ResultSet resultProductInfo2 = null;
 ResultSet resultTransaction = null;
 ResultSet contains = null;
+ResultSet resultSelect4 = null;
+ResultSet resultCheck = null;
+ResultSet resultProductInfo3 = null;
+ResultSet resultSelect =null;
+ResultSet resultCustomer = null;
+ResultSet resultCashback = null;
 Integer choice = null;
 
 Scanner input = new Scanner(System.in);
@@ -114,7 +120,7 @@ jdbcURL = jdbcURL + user;
                     String sqlSelect4 = "Select StoreQuantity from productInfo where ProductID = %d AND StoreID = %d";
                     sqlSelect4 = String.format(sqlSelect4, productID, storeIDcommit);
 
-                    ResultSet resultSelect4 = statement.executeQuery(sqlSelect4);
+                    resultSelect4 = statement.executeQuery(sqlSelect4);
 
                     while(resultSelect4.next()) {
                         int existingStoreQuantity = resultSelect4.getInt("StoreQuantity");
@@ -226,7 +232,7 @@ jdbcURL = jdbcURL + user;
 
             String sqlSelectCheck = "SELECT ReturnQuantity, ProdSellQty from contains where TransactionID = %d and ProductID = %d";
             sqlSelectCheck = String.format(sqlSelectCheck, transactionIDreturn, productID);
-            ResultSet resultCheck = statement.executeQuery(sqlSelectCheck);
+            resultCheck = statement.executeQuery(sqlSelectCheck);
             if(resultCheck.next() == false) {
                 System.out.println("Wrong transaction ID/ProductID. Please check again.");
                 return;
@@ -256,7 +262,7 @@ jdbcURL = jdbcURL + user;
             java.sql.Date purchaseDate = resultTransaction.getDate("PurchaseDate");
             String sqlSelectproductInfo = "SELECT SaleStartDate, SaleEndDate, DiscountInfo, SellingPrice FROM productInfo where StoreID = %d and ProductID = %d";
             sqlSelectproductInfo = String.format(sqlSelectproductInfo, storeIDreturn, productID);
-            ResultSet resultProductInfo3 = statement.executeQuery(sqlSelectproductInfo);
+            resultProductInfo3 = statement.executeQuery(sqlSelectproductInfo);
             double discount2 = 0;
             double total2 = 0;
 
@@ -288,7 +294,7 @@ jdbcURL = jdbcURL + user;
         int supplierID = input.nextInt();
 
         String sqlSelect = "SELECT SUM(Amount) as Amount FROM generateBills WHERE SupplierID =" + supplierID;
-        ResultSet resultSelect = statement.executeQuery(sqlSelect);
+        resultSelect = statement.executeQuery(sqlSelect);
         int amount = 0;
 
         while(resultSelect.next()) {
@@ -305,7 +311,7 @@ jdbcURL = jdbcURL + user;
         case 4:
 
         String sqlSelectCase4 = "SELECT CustomerID FROM ClubMembers WHERE LevelID = 3;";
-        ResultSet resultCustomer = statement.executeQuery(sqlSelectCase4);
+        resultCustomer = statement.executeQuery(sqlSelectCase4);
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         while(resultCustomer.next()) {
@@ -313,7 +319,7 @@ jdbcURL = jdbcURL + user;
             String sqlSelect2 = "SELECT 0.02 * SUM(TotalAmount) as Cashback FROM Transaction WHERE CustomerID = %d AND YEAR(PurchaseDate) = '%d'";
             sqlSelect2 = String.format(sqlSelect2, customerID, year);
 
-            ResultSet resultCashback = statement.executeQuery(sqlSelect2);
+            resultCashback = statement.executeQuery(sqlSelect2);
 
             while(resultCashback.next()) {
                 double cashback = resultCashback.getFloat("Cashback");
@@ -332,11 +338,18 @@ jdbcURL = jdbcURL + user;
         } while(!choice.equals(5));
 
 } finally {
+
     close(resultProductInfo2); 
+    close(resultProductInfo3); 
+    close(resultCashback);
     close(resultTransaction) ;
     close(contains);
     close(resultcontains);
     close(resultProductInfo);
+    close(resultSelect4);
+    close(resultSelect);
+    close(resultCustomer);
+    close(resultCheck);
     close(statement);
     close(connection);
     }

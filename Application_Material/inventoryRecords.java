@@ -25,6 +25,7 @@ Class.forName("org.mariadb.jdbc.Driver");
 Connection connection = null;
 Statement statement = null;
 ResultSet result = null;
+ResultSet result2 = null;
 
 Scanner input = new Scanner(System.in);
 System.out.println("Enter database name:");
@@ -79,7 +80,7 @@ jdbcURL = jdbcURL + user;
 
                     String sqlselect2 = "Select SuppliedQuantity, IsBilled from generateBills WHERE ProductID = %d and SupplierID = %d";
                     sqlselect2 = String.format(sqlselect2, productID,supplierID);
-                    ResultSet result2 = statement.executeQuery(sqlselect2);
+                    result2 = statement.executeQuery(sqlselect2);
 
                     while(result2.next()){ 
                         int initialQty = result2.getInt("SuppliedQuantity");
@@ -244,7 +245,7 @@ jdbcURL = jdbcURL + user;
 
                 String sqlselect3 = "Select * from productInfo where ProductID = '%d' AND StoreID = '%d'";
                 sqlselect3= String.format(sqlselect3, productID, storeDestID);
-                ResultSet result2 = statement.executeQuery(sqlselect3);
+                result2 = statement.executeQuery(sqlselect3);
                 String salestartdate = "";
                 String saleenddate ="";
                 double discountinfo=0.0;
@@ -327,6 +328,7 @@ jdbcURL = jdbcURL + user;
 
 } finally {
     close(result);
+    close(result2);
     close(statement);
     close(connection);
     }
