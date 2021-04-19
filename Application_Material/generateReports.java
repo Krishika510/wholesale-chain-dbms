@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import java.time.LocalDate;
+import java.io.Console;
 
 public class generateReports {
 
@@ -28,8 +29,8 @@ ResultSet result = null;
 Scanner input = new Scanner(System.in);
 System.out.println("Enter database name:");
 user = input.nextLine();
-System.out.println("Enter password:");
-password = input.nextLine();
+Console console = System.console();
+password = new String(console.readPassword("Enter Password:\n"));
 jdbcURL = jdbcURL + user;
 
     try {

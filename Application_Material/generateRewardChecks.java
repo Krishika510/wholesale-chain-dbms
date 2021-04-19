@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import java.util.Calendar;
+import java.io.Console;
 
 public class generateRewardChecks {
 
@@ -9,8 +10,8 @@ private static String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/";
 
 // Update your user and password info here!
 
-private static final String user;
-private static final String password;
+private static String user;
+private static String password;
 
 public static void main(String[] args) {
 	try {
@@ -30,11 +31,11 @@ public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		System.out.println("Enter database name:");
 		user = input.nextLine();
-		System.out.println("Enter password:");
-		password = input.nextLine();
+		Console console = System.console();
+		password = new String(console.readPassword("Enter Password:\n"));
 		jdbcURL = jdbcURL + user;
 
-		Class.forName("org.mariadb.jdbc.Driver");
+		// Class.forName("org.mariadb.jdbc.Driver");
 
 		try {
 			    // Get a connection instance from the first driver in the
@@ -48,19 +49,18 @@ public static void main(String[] args) {
 
 			    while(resultCustomer.next()) {
 			    	int customerID = resultCustomer.getInt("CustomerID");
-			    	System.out.println(year);
 			    	String sqlSelect2 = "SELECT 0.02 * SUM(TotalAmount) as Cashback FROM Transaction WHERE CustomerID = %d AND YEAR(PurchaseDate) = '%d'";
 			    	sqlSelect2 = String.format(sqlSelect2, customerID, year);
 
 			    	resultCashback = statement.executeQuery(sqlSelect2);
 
 			    	while(resultCashback.next()) {
-			    		int cashback = resultCashback.getInt("Cashback");
-			    		String sqlUpdate = "UPDATE ClubMembers SET Cashback = %d WHERE CustomerID = %d";
+			    		double cashback = resultCashback.getFloat("Cashback");
+			    		String sqlUpdate = "UPDATE ClubMembers SET Cashback = %f WHERE CustomerID = %d";
 				    	sqlUpdate = String.format(sqlUpdate, cashback, customerID);
 				    	statement.executeQuery(sqlUpdate);
 
-				    	System.out.format("Generated cashback reward of %d for Customer ID %d", cashback, customerID);
+				    	System.out.format("Generated cashback reward of %f for Customer ID %d\n", cashback, customerID);
 			    	}
 
 			    	

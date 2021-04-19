@@ -1,6 +1,12 @@
 import java.sql.*;
 import java.util.Scanner;
 import java.time.LocalDate;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Scanner;
+import java.util.Calendar;
+import java.io.Console;
 
 public class informationProcessing {
 
@@ -28,8 +34,8 @@ ResultSet result = null;
 Scanner input = new Scanner(System.in);
 System.out.println("Enter database name:");
 user = input.nextLine();
-System.out.println("Enter password:");
-password = input.nextLine();
+Console console = System.console();
+password = new String(console.readPassword("Enter Password:\n"));
 jdbcURL = jdbcURL + user;
 
 
@@ -68,18 +74,19 @@ jdbcURL = jdbcURL + user;
                     switch(table){
                         case 1:
                         {
+                            input.nextLine();
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Store ID:");
-                            String storeID = input.next();
+                            String storeID = input.nextLine();
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Address:");
-                            String address = input.next();
+                            String address = input.nextLine();
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Phone Number:");
-                            String phoneNumber = input.next();
+                            String phoneNumber = input.nextLine();
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Manager Staff ID:");
-                            String managerStaffID = input.next();
+                            String managerStaffID = input.nextLine();
                             
                 
                             String sqlInsert1 = "INSERT INTO Store (StoreID, Address, PhoneNumber, ManagerStaffID) VALUES ('%s','%s','%s','%s')";
@@ -120,7 +127,7 @@ jdbcURL = jdbcURL + user;
                             System.out.println("Enter Phone Number:");
                             String phoneNumber = input.nextLine();
 
-                            String sqlInsert1 = "INSERT INTO Staff (StaffID, StoreID, Name, DatOfBirth, JobTitle, HomeAddress, EmailAdd, EmpStartDate, PhoneNumber) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')";
+                            String sqlInsert1 = "INSERT INTO Staff (StaffID, StoreID, Name, DateOfBirth, JobTitle, HomeAddress, EmailAdd, EmpStartDate, PhoneNumber) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')";
                             sqlInsert1 = String.format(sqlInsert1, staffID, storeID, name, dob, jobTitle, homeAddress, emailAddress, empStartDate, phoneNumber );
                             int i = statement.executeUpdate(sqlInsert1);
                             System.out.format("%d Row inserted into Staff table\n", i);
@@ -148,19 +155,13 @@ jdbcURL = jdbcURL + user;
                             // Take Warehouse Staff ID as input.
                             System.out.println("Enter Email Address:");
                             String emailAddress = input.nextLine();
-                            // Take Warehouse Staff ID as input.
-                            System.out.println("Enter Membership expiration date:");
-                            String memExpDate = input.nextLine();
-                            // Take Warehouse Staff ID as input.
+                        
                             System.out.println("Enter Phone Number:");
                             String phoneNumber = input.nextLine();
-                            // Take Warehouse Staff ID as input.
-                            System.out.println("Enter Active Status:");
-                            boolean activeStatus = input.nextBoolean();
+                        
                             
-
-                            String sqlInsert1 = "INSERT INTO ClubMembers (CustomerID, LevelID, FirstName, LastName, HomeAddress, EmailAdd, PhoneNumber, MembershipExpDate, ActiveStatus) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s',%b)";
-                            sqlInsert1 = String.format(sqlInsert1, custID, levelID, fName, lName, homeAddress, emailAddress, phoneNumber, memExpDate, activeStatus);
+                            String sqlInsert1 = "INSERT INTO ClubMembers (CustomerID, LevelID, FirstName, LastName, HomeAddress, EmailAdd, PhoneNumber, MembershipExpDate, ActiveStatus) VALUES ('%s','%s','%s','%s','%s','%s','%s',CURDATE()+ INTERVAL 1 YEAR,true)";
+                            sqlInsert1 = String.format(sqlInsert1, custID, levelID, fName, lName, homeAddress, emailAddress, phoneNumber);
                             int i = statement.executeUpdate(sqlInsert1);
                             System.out.format("%d Row inserted into Customer table\n", i);
                             connection.commit();
@@ -305,8 +306,10 @@ jdbcURL = jdbcURL + user;
                                 System.out.println("4. Home Address\n");
                                 System.out.println("5. Email Address\n");
                                 System.out.println("6. Employee Start Date\n");
-                                System.out.println("7. Phone Number\n");
-                                System.out.println("8. Exit menu\n\n");
+                                System.out.println("7. Employee End Date\n");
+                                System.out.println("8. Phone Number\n");
+                                System.out.println("9. Store ID\n");
+                                System.out.println("10. Exit menu\n\n");
 
                                 System.out.println("Which attribute do you want to use the update operation on?");
                                 int choice = input.nextInt();
@@ -380,10 +383,32 @@ jdbcURL = jdbcURL + user;
                                     case 7:
                                     {
                                         input.nextLine();
+                                        System.out.println("Enter Employee End Date to update:");
+                                        String empEndDate = input.nextLine();
+                                        String sqlUpdate2 = "UPDATE Staff SET EmpEndDate = '%s' WHERE StaffID = %d";
+                                        sqlUpdate2 = String.format(sqlUpdate2, empEndDate, staffID);
+                                        statement.executeQuery(sqlUpdate2);
+                                        System.out.println("Staff Table Updated Successfully");
+                                        return;
+                                    }
+                                    case 8:
+                                    {
+                                        input.nextLine();
                                         System.out.println("Enter Phone Number to update:");
                                         String phno = input.nextLine();
                                         String sqlUpdate2 = "UPDATE Staff SET PhoneNumber = '%s' WHERE StaffID = %d";
                                         sqlUpdate2 = String.format(sqlUpdate2, phno, staffID);
+                                        statement.executeQuery(sqlUpdate2);
+                                        System.out.println("Staff Table Updated Successfully");
+                                        return;
+                                    }
+                                    case 9:
+                                    {
+                                        input.nextLine();
+                                        System.out.println("Enter Store ID to update:");
+                                        String storeID = input.nextLine();
+                                        String sqlUpdate2 = "UPDATE Staff SET StoreID = '%s' WHERE StaffID = %d";
+                                        sqlUpdate2 = String.format(sqlUpdate2, storeID, staffID);
                                         statement.executeQuery(sqlUpdate2);
                                         System.out.println("Staff Table Updated Successfully");
                                         return;
@@ -421,7 +446,8 @@ jdbcURL = jdbcURL + user;
                                 System.out.println("5. Phone Number\n");
                                 System.out.println("6. Membership Expiration Date\n");
                                 System.out.println("7. Active Status\n");
-                                System.out.println("8. Exit menu\n\n");
+                                System.out.println("8. Level ID\n");
+                                System.out.println("9. Exit menu\n\n");
 
                                 System.out.println("Which attribute do you want to use the update operation on?");
                                 int choice = input.nextInt();
@@ -468,7 +494,7 @@ jdbcURL = jdbcURL + user;
                                         // Take Warehouse Staff ID as input.
                                         System.out.println("Enter Email Address to update:");
                                         String emailAddress = input.nextLine();
-                                        String sqlUpdate2 = "UPDATE ClubMembers SET EmailAddress = '%s' WHERE CustomerID = %d";
+                                        String sqlUpdate2 = "UPDATE ClubMembers SET EmailAdd = '%s' WHERE CustomerID = %d";
                                         sqlUpdate2 = String.format(sqlUpdate2, emailAddress, custID);
                                         statement.executeQuery(sqlUpdate2);
                                         System.out.println("Customer Table Updated Successfully");
@@ -505,6 +531,17 @@ jdbcURL = jdbcURL + user;
                                         boolean activeStatus = input.nextBoolean();
                                         String sqlUpdate2 = "UPDATE ClubMembers SET ActiveStatus = %b WHERE CustomerID = %d";
                                         sqlUpdate2 = String.format(sqlUpdate2, activeStatus, custID);
+                                        statement.executeQuery(sqlUpdate2);
+                                        System.out.println("Customer Table Updated Successfully");
+                                        return;
+                                    }
+                                    case 8:
+                                    {
+                                        // Take Warehouse Staff ID as input.
+                                        System.out.println("Enter Level ID to update:");
+                                        String levelID = input.nextLine();
+                                        String sqlUpdate2 = "UPDATE ClubMembers SET LevelID = %b WHERE CustomerID = %d";
+                                        sqlUpdate2 = String.format(sqlUpdate2, levelID, custID);
                                         statement.executeQuery(sqlUpdate2);
                                         System.out.println("Customer Table Updated Successfully");
                                         return;
@@ -637,7 +674,7 @@ jdbcURL = jdbcURL + user;
                             while(result.next())
                             {
 
-                            String sqldelete2 = "DELETE FROM Store WHERE StoreID = %d";
+                            String sqldelete2 = "UPDATE Store SET isDelete = True WHERE StoreID = %d";
                             sqldelete2 = String.format(sqldelete2, storeID);
                             statement.executeQuery(sqldelete2);
                             System.out.println("Row deleted from Store table");
@@ -658,7 +695,7 @@ jdbcURL = jdbcURL + user;
 
                             while(result.next())
                             {
-                            String sqldelete2 = "DELETE FROM Staff WHERE StaffID = %d";
+                            String sqldelete2 = "UPDATE Staff SET isDelete = True WHERE StaffID = %d";
                             sqldelete2 = String.format(sqldelete2, staffID);
                             statement.executeQuery(sqldelete2);
                             System.out.println("Row deleted from Staff table");
@@ -680,7 +717,7 @@ jdbcURL = jdbcURL + user;
                             while(result.next())
                             {
 
-                            String sqldelete2 = "DELETE FROM ClubMembers WHERE CustomerID = %d";
+                            String sqldelete2 = "UPDATE ClubMembers SET isDelete = True WHERE CustomerID = %d";
                             sqldelete2 = String.format(sqldelete2, custID);
                             statement.executeQuery(sqldelete2);
                             System.out.println("Row deleted from Club Members table");
@@ -701,7 +738,7 @@ jdbcURL = jdbcURL + user;
 
                             while(result.next())
                             {
-                            String sqldelete2 = "DELETE FROM Supplier WHERE SupplierID = %d";
+                            String sqldelete2 = "UPDATE Supplier SET isDelete = True WHERE SupplierID = %d";
                             sqldelete2 = String.format(sqldelete2, suppID);
                             statement.executeQuery(sqldelete2);
                             System.out.println("Row deleted from Supplier table");
@@ -723,7 +760,6 @@ jdbcURL = jdbcURL + user;
                 }
                 case 4:
                 {
-                    connection.setAutoCommit(false);
                     System.out.println("Enter Product ID:");
                     int prodID = input.nextInt();
                     System.out.println("Enter Store ID:");

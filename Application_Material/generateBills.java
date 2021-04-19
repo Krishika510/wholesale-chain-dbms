@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.io.Console;
 
 public class generateBills {
 
@@ -8,8 +9,8 @@ private static String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/";
 
 // Update your user and password info here!
 
-private static final String user;
-private static final String password;
+private static String user;
+private static String password;
 
 public static void main(String[] args) {
 	try {
@@ -27,8 +28,8 @@ public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		System.out.println("Enter database name:");
 		user = input.nextLine();
-		System.out.println("Enter password:");
-		password = input.nextLine();
+		Console console = System.console();
+		password = new String(console.readPassword("Enter Password:\n"));
 		jdbcURL = jdbcURL + user;
 
 		Class.forName("org.mariadb.jdbc.Driver");
@@ -43,7 +44,7 @@ public static void main(String[] args) {
 
 			    statement = connection.createStatement();
 
-			    String sqlSelect = "SELECT Amount FROM generateBills WHERE SupplierID =" + supplierID;
+			    String sqlSelect = "SELECT SUM(Amount) as Amount FROM generateBills WHERE SupplierID =" + supplierID;
 			    resultSelect = statement.executeQuery(sqlSelect);
 
 			    while(resultSelect.next()) {
@@ -52,7 +53,7 @@ public static void main(String[] args) {
 
 			    System.out.format("Generated bill amount of %d for Supplier ID %d", amount, supplierID);
 
-			    String sqlUpdate = "UPDATE generateBills SET Amount = 0, IsBilled = TRUE, SuppliedQuantity = 0 WHERE SupplierID = %d";
+			    String sqlUpdate = "UPDATE generateBills SET Amount = 0, IsBilled = TRUE, SuppliedQuantity = 0 WHERE SupplierID = %d\n";
 			    sqlUpdate = String.format(sqlUpdate, supplierID);
     			statement.executeQuery(sqlUpdate);
 		}
