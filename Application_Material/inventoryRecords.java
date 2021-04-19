@@ -53,8 +53,8 @@ jdbcURL = jdbcURL + user;
 
         switch(task){
             case 1:
-            {
-                connection.setAutoCommit(false);
+            try {
+                connection.setAutoCommit(false); //BEGIN TRANSACTION.
 
                 // Take Product ID as input
                 System.out.println("Enter Product ID:");
@@ -145,9 +145,21 @@ jdbcURL = jdbcURL + user;
                 System.out.format("%d Row inserted into generateBills", j);
                 }
                 //End Transaction
-                connection.commit();
+                connection.commit(); //COMMIT TRANSACTION IF EVERYTHING IS SUCCESSFUL.
                 break;
                 
+            } catch (SQLException e) {
+                System.out.println(e);
+                if (connection != null) {
+                    try {
+                        System.err.print("There was a problem. Transaction is being rolled back.");
+                        connection.rollback(); // ROLLBACK IN CASE OF A FAILURE.
+                        break;
+                    } catch (SQLException excep) {
+                        System.out.println(excep);
+                        break;
+                    }
+                }
             }
             case 2:
             {
