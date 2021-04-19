@@ -405,7 +405,8 @@ jdbcURL = jdbcURL + user;
 
         
 } finally {
-    // close(resultSelect);
+    close(rsmd);
+    close(rs);
     close(result);
     close(statement);
     close(connection);
@@ -430,6 +431,13 @@ static void close(Connection connection) {
         }
     }
     static void close(ResultSet result) {
+        if(result != null) {
+            try {
+            result.close();
+            } catch(Throwable whatever) {}
+        }
+    }
+    static void close(ResultSetMetaData result) {
         if(result != null) {
             try {
             result.close();
