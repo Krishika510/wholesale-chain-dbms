@@ -2,8 +2,10 @@ import java.sql.*;
 import java.util.Scanner;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.io.Console;
+import java.util.Calendar;
 
-public class commitTransaction {
+public class billingAndTransaction {
 
 
 // Update your user info alone here
@@ -34,8 +36,8 @@ Integer choice = null;
 Scanner input = new Scanner(System.in);
 System.out.println("Enter database name:");
 user = input.nextLine();
-System.out.println("Enter password:");
-password = input.nextLine();
+Console console = System.console();
+password = new String(console.readPassword("Enter Password:\n"));
 jdbcURL = jdbcURL + user;
 
     try {
@@ -49,10 +51,12 @@ jdbcURL = jdbcURL + user;
         do {
 
         System.out.println("\n\t\tTransaction Operations");
-        System.out.println("\t\t-----------------------------\n");
+        System.out.println("\t\t--------------------------\n");
         System.out.println("1. Add a transaction\n");
         System.out.println("2. Return a product\n");
-        System.out.println("3. Exit menu\n\n");
+        System.out.println("3. Generate Supplier Bills\n");
+        System.out.println("4. Generate Reward Checks for Platinum Members\n");
+        System.out.println("5. Exit menu\n\n");
         
         System.out.println("Which task do you want to perform?");
 
@@ -62,6 +66,7 @@ jdbcURL = jdbcURL + user;
 
             case 1: 
 
+                try {
                 // Take Transaction ID as input.
                 System.out.println("Enter Transaction ID:");
                 int transactionIDcommit = input.nextInt();
@@ -78,8 +83,7 @@ jdbcURL = jdbcURL + user;
                 System.out.println("Enter CustomerID:");
                 int customerID = input.nextInt();
 
-                // Begin Transaction
-                connection.setAutoCommit(false);
+                connection.setAutoCommit(false); //BEGIN TRANSACTION.
 
                 // Insert Transaction details obtained from user.
                 String sqlInsert1 = "INSERT INTO Transaction(TransactionID, StoreID, CustomerID, CashierStaffID, PurchaseDate, TotalAmount) VALUES(%d,%d,%d,%d,CURDATE(),0)";
@@ -107,6 +111,19 @@ jdbcURL = jdbcURL + user;
                     System.out.println("Enter quantity of the ProductID: "+productID);
                     int quantity = input.nextInt();
 
+                    String sqlSelect4 = "Select StoreQuantity from productInfo where ProductID = %d AND StoreID = %d";
+                    sqlSelect4 = String.format(sqlSelect4, productID, storeIDcommit);
+
+                    ResultSet resultSelect4 = statement.executeQuery(sqlSelect4);
+
+                    while(resultSelect4.next()) {
+                        int existingStoreQuantity = resultSelect4.getInt("StoreQuantity");
+                        if (quantity > existingStoreQuantity) {
+                            System.out.format("Invalid quantity, Store quantity %d lesser than Transaction quantity %d\n", existingStoreQuantity, quantity);
+                            return;
+                        }
+
+                    }
                     // Insert into contains table.
                     String sqlInsert2 = "INSERT INTO contains (TransactionID, ProductID, ProdSellQty) VALUES (%d,%d,%d)";
 
@@ -174,11 +191,27 @@ jdbcURL = jdbcURL + user;
         }
 
 }
-                //End Transaction
-                connection.commit();
+                connection.commit(); //COMMIT TRANSACTION IF EVERYTHING IS SUCCESSFUL.
+                System.out.println("Transaction updated successfully");
                 break;
 
+            } catch(SQLException e) {
+                System.out.println(e);
+                if (connection != null) {
+                    try {
+                        System.err.print("There was a problem. Transaction is being rolled back");
+                        connection.rollback(); //ROLLBACK TRANSACTION IN CASE OF A FAILURE.
+                        break;
+                    } catch (SQLException excep) {
+                        System.out.println(excep);
+                        break;
+                    }
+                }
+            }
+
         case 2:
+
+            connection.setAutoCommit(false); // BEGIN TRANSACTION
             System.out.println("Enter Transaction ID: ");
             int transactionIDreturn = input.nextInt();
 
@@ -191,43 +224,39 @@ jdbcURL = jdbcURL + user;
             System.out.println("Enter quantity being returned: ");
             int returnQuantity = input.nextInt();
 
-            // Begin Transaction
-            connection.setAutoCommit(false);
-
             String sqlSelectCheck = "SELECT ReturnQuantity, ProdSellQty from contains where TransactionID = %d and ProductID = %d";
             sqlSelectCheck = String.format(sqlSelectCheck, transactionIDreturn, productID);
             ResultSet resultCheck = statement.executeQuery(sqlSelectCheck);
+            if(resultCheck.next() == false) {
+                System.out.println("Wrong transaction ID/ProductID. Please check again.");
+                return;
+            }
 
             while (resultCheck.next()) {
-                if (resultCheck.getInt("ReturnQuantity") != 0) {
+                System.out.println(resultCheck.next());
                     int earlierReturn = resultCheck.getInt("ReturnQuantity");
                     int prodSellQty = resultCheck.getInt("ProdSellQty");
 
-                    if (earlierReturn >= prodSellQty) {
-                        System.out.println("Already returned all quantities of this item, please try some other product.");
-                        break;
-                    }
+                    if (returnQuantity > prodSellQty - earlierReturn) {
+                        System.out.println("Invalid return quantity, please enter return quantity less than or equal to sell quantity.");
+                        return;
+
                 }
             }
-
             String sqlUpdateContains = "UPDATE contains SET ReturnQuantity = %d, ReturnDate = CURDATE() where TransactionID = %d and ProductID = %d";
             sqlUpdateContains = String.format(sqlUpdateContains, returnQuantity, transactionIDreturn, productID);
             statement.executeQuery(sqlUpdateContains);
 
             String sqlSelectTransaction = "SELECT StoreID, PurchaseDate FROM Transaction WHERE TransactionID = %d";
             sqlSelectTransaction = String.format(sqlSelectTransaction, transactionIDreturn);
-
             resultTransaction = statement.executeQuery(sqlSelectTransaction);
 
             while(resultTransaction.next()) {
             int storeIDreturn = resultTransaction.getInt("StoreID");
-
             java.sql.Date purchaseDate = resultTransaction.getDate("PurchaseDate");
-
             String sqlSelectproductInfo = "SELECT SaleStartDate, SaleEndDate, DiscountInfo, SellingPrice FROM productInfo where StoreID = %d and ProductID = %d";
             sqlSelectproductInfo = String.format(sqlSelectproductInfo, storeIDreturn, productID);
             ResultSet resultProductInfo3 = statement.executeQuery(sqlSelectproductInfo);
-
             double discount2 = 0;
             double total2 = 0;
 
@@ -247,14 +276,60 @@ jdbcURL = jdbcURL + user;
         String sqlUpdateTransaction = "UPDATE Transaction SET TotalAmount = TotalAmount - %f where TransactionID = %d";
         sqlUpdateTransaction = String.format(sqlUpdateTransaction, total2, transactionIDreturn);
         statement.executeQuery(sqlUpdateTransaction);
-    }
 
-                //End Transaction
-                connection.commit();
+    }
+                connection.commit(); //END TRANSACTION
+                System.out.println("Transaction updated successfully");
                 break;
 
+        case 3:
+
+        System.out.println("Enter Supplier ID: ");
+        int supplierID = input.nextInt();
+
+        String sqlSelect = "SELECT SUM(Amount) as Amount FROM generateBills WHERE SupplierID =" + supplierID;
+        ResultSet resultSelect = statement.executeQuery(sqlSelect);
+        int amount = 0;
+
+        while(resultSelect.next()) {
+            amount = resultSelect.getInt("Amount");
+        }
+
+        System.out.format("Generated bill amount of %d for Supplier ID %d", amount, supplierID);
+
+        String sqlUpdate = "UPDATE generateBills SET Amount = 0, IsBilled = TRUE, SuppliedQuantity = 0 WHERE SupplierID = %d\n";
+        sqlUpdate = String.format(sqlUpdate, supplierID);
+        statement.executeQuery(sqlUpdate);
+        break;
+
+        case 4:
+
+        String sqlSelectCase4 = "SELECT CustomerID FROM ClubMembers WHERE LevelID = 3;";
+        ResultSet resultCustomer = statement.executeQuery(sqlSelectCase4);
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
+        while(resultCustomer.next()) {
+            int customerID = resultCustomer.getInt("CustomerID");
+            String sqlSelect2 = "SELECT 0.02 * SUM(TotalAmount) as Cashback FROM Transaction WHERE CustomerID = %d AND YEAR(PurchaseDate) = '%d'";
+            sqlSelect2 = String.format(sqlSelect2, customerID, year);
+
+            ResultSet resultCashback = statement.executeQuery(sqlSelect2);
+
+            while(resultCashback.next()) {
+                double cashback = resultCashback.getFloat("Cashback");
+                String sqlUpdateCase4 = "UPDATE ClubMembers SET Cashback = %f WHERE CustomerID = %d";
+                sqlUpdateCase4 = String.format(sqlUpdateCase4, cashback, customerID);
+                statement.executeQuery(sqlUpdateCase4);
+
+                System.out.format("Generated cashback reward of %f for Customer ID %d\n", cashback, customerID);
+            }                
+
+        }
+
+        break;
+
 }
-        } while(!choice.equals(3));
+        } while(!choice.equals(5));
 
 } finally {
     close(resultcontains);
