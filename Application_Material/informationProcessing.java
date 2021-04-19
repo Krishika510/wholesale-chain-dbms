@@ -748,7 +748,6 @@ jdbcURL = jdbcURL + user;
                 }
                 case 4:
                 {
-                    connection.setAutoCommit(false);
                     System.out.println("Enter Product ID:");
                     int prodID = input.nextInt();
                     System.out.println("Enter Store ID:");
