@@ -165,16 +165,21 @@ jdbcURL = jdbcURL + user;
                 System.out.println("Enter Warehouse Staff ID:");
                 int warehouseStaffID = input.nextInt();
 
-                String sqlselect1 = "Select ProductID, StoreID from productInfo where ProductID = '%d' AND StoreID = '%d'";
+                String sqlselect1 = "Select ProductID, StoreID, StoreQuantity from productInfo where ProductID = '%d' AND StoreID = '%d'";
                 sqlselect1 = String.format(sqlselect1, productID, storeID);
                 result = statement.executeQuery(sqlselect1);
 
                 while(result.next()){
                     int s = result.getInt("StoreID");
                     int p = result.getInt("ProductID");
+                    int q = result.getInt("StoreQuantity");
                     // Take Return Quantity as input
                     System.out.println("Enter Return Quantity:");
                     int returnQuantity = input.nextInt();
+                    if(q < returnQuantity) {
+                        System.out.println("Not enough stock to transfer");
+                        return;
+                    }
                     String sqlUpdate1 = "UPDATE productInfo SET StoreQuantity = StoreQuantity - %d, ProductDest='Warehouse', ProductSource='NULL' WHERE ProductID = %d AND StoreID = %d";
                     sqlUpdate1 = String.format(sqlUpdate1, returnQuantity, p, s);
                     statement.executeQuery(sqlUpdate1);
@@ -215,6 +220,12 @@ jdbcURL = jdbcURL + user;
                 System.out.println("Enter Transfer Quantity:");
                 int returnQuantity = input.nextInt();
 
+                if (storeID == storeDestID)
+                {
+                    System.out.println("Source store and destination store cannot be same");
+                    return;
+                }
+
                 String sqlselect1 = "Select * from productInfo where ProductID = '%d' AND StoreID = '%d'";
                 sqlselect1= String.format(sqlselect1, productID, storeID);
                 result = statement.executeQuery(sqlselect1);
@@ -222,11 +233,15 @@ jdbcURL = jdbcURL + user;
                 String sqlselect3 = "Select * from productInfo where ProductID = '%d' AND StoreID = '%d'";
                 sqlselect3= String.format(sqlselect3, productID, storeDestID);
                 ResultSet result2 = statement.executeQuery(sqlselect3);
-                
+                String salestartdate = "";
+                String saleenddate ="";
+                double discountinfo=0.0;
+                int sellingprice = 0;
+                int t =0;
                 if(result2.next()!= false){
 
                     while(result.next()){
-                        int t = result.getInt("StoreQuantity");
+                        t = result.getInt("StoreQuantity");
                         if(t < returnQuantity) {
                             System.out.println("Not enough stock to transfer");
                             return;
@@ -250,7 +265,11 @@ jdbcURL = jdbcURL + user;
                     }
                 }else{
                     while(result.next()){
-                        int t = result.getInt("StoreQuantity");
+                        t = result.getInt("StoreQuantity");
+                        salestartdate = result.getString("SaleStartDate");
+                        saleenddate = result.getString("SaleEndDate");
+                        discountinfo = result.getFloat("DiscountInfo");
+                        sellingprice = result.getInt("SellingPrice");
                         if(t < returnQuantity) {
                             System.out.println("Not enough stock to transfer");
                             return;
@@ -261,8 +280,9 @@ jdbcURL = jdbcURL + user;
                         statement.executeQuery(sqlUpdate1);
                         }
                     }
-                    String sqlInsert1 = "INSERT INTO productInfo (StoreID, ProductID, WarehouseStaffID, ProductSource, ProductDest, SaleStartDate, SaleEndDate, DiscountInfo, SellingPrice, StoreQuantity) VALUES (%d,%d,%d,%d,%d,'2020-08-07','2020-10-09','NULL',10,%d)";
-                    sqlInsert1 = String.format(sqlInsert1, storeDestID, productID, warehouseStaffID, storeID, storeDestID, returnQuantity );
+                    
+                    String sqlInsert1 = "INSERT INTO productInfo (StoreID, ProductID, WarehouseStaffID, ProductSource, ProductDest, SaleStartDate, SaleEndDate, DiscountInfo, SellingPrice, StoreQuantity) VALUES (%d,%d,%d,%d,%d,'%s','%s',%f,%d,%d)";
+                    sqlInsert1 = String.format(sqlInsert1, storeDestID, productID, warehouseStaffID, storeID, storeDestID, salestartdate, saleenddate, discountinfo,sellingprice, returnQuantity );
 
                     int i = statement.executeUpdate(sqlInsert1);
 
