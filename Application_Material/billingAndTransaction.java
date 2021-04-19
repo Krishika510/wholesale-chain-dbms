@@ -333,7 +333,7 @@ jdbcURL = jdbcURL + user;
 
 } finally {
     close(resultProductInfo2); 
-    close(resultTransaction) 
+    close(resultTransaction) ;
     close(contains);
     close(resultcontains);
     close(resultProductInfo);

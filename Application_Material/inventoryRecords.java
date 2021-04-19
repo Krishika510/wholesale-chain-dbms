@@ -326,7 +326,6 @@ jdbcURL = jdbcURL + user;
         
 
 } finally {
-    close(result2);
     close(result);
     close(statement);
     close(connection);

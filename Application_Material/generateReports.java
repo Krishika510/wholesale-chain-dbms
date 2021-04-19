@@ -405,10 +405,10 @@ jdbcURL = jdbcURL + user;
 
         
 } finally {
-    close(rsmd);
-    close(rs);
+    // close(rsmd);
+    // close(rs);
     close(result);
-    close(rs);
+    // close(rs);
     close(statement);
     close(connection);
     }
@@ -438,18 +438,11 @@ static void close(Connection connection) {
             } catch(Throwable whatever) {}
         }
     }
-<<<<<<< HEAD
-    static void close(ResultSet rs) {
-        if(rs != null) {
-            try {
-            rs.close();
-=======
-    static void close(ResultSetMetaData result) {
-        if(result != null) {
-            try {
-            result.close();
->>>>>>> 76c3ff67a054fdab4f2b083a69dded7f98ec90ab
-            } catch(Throwable whatever) {}
-        }
-    }
+    // static void close(ResultSetMetaData result) {
+    //     if(rsmd != null) {
+    //         try {
+    //         rsmd.close();
+    //         } catch(Throwable whatever) {}
+    //     }
+    // }
     }
