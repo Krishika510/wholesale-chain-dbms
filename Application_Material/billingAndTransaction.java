@@ -332,7 +332,7 @@ jdbcURL = jdbcURL + user;
         } while(!choice.equals(5));
 
 } finally {
-    close(esultProductInfo2); 
+    close(resultProductInfo2); 
     close(resultTransaction) 
     close(contains);
     close(resultcontains);
