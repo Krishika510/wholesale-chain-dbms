@@ -23,10 +23,14 @@ Class.forName("org.mariadb.jdbc.Driver");
 // Connection interface is used to create statement.
 Connection connection = null;
 // Used to implement simple SQL statements with no parameters.
+
 Statement statement = null;
 // ResultSet interface represents the result set of a database query.
 // A ResultSet object maintains a cursor that points to the current row in the result set
 ResultSet result = null;
+ResultSet rs = null;
+ResultSetMetaData rsmd = null;
+
 // Creates a new Scanner instance which points to the input stream passed as argument.
 Scanner input = new Scanner(System.in);
 // Asks user to input database name.
@@ -181,8 +185,8 @@ jdbcURL = jdbcURL + user;
 
                 // SQL query that plugs in user inputted data to generate Sales Growth report for a specific store for a given time period.
                 String sqlSelect = "SELECT StoreID, SUM(TotalAmount) AS Total_Sales FROM Transaction WHERE YEAR(PurchaseDate) =" + "'"+ report_year+"' GROUP BY StoreID";
-                ResultSet rs = statement.executeQuery(sqlSelect);
-                ResultSetMetaData rsmd = rs.getMetaData();
+                rs = statement.executeQuery(sqlSelect);
+                rsmd = rs.getMetaData();
                 int columnsNumber = rsmd.getColumnCount();
                 if(!rs.next()){
                     System.out.println("No results found.");
@@ -214,8 +218,8 @@ jdbcURL = jdbcURL + user;
                 // SQL query that plugs in user inputted data to generateMerchandise Stock report for each store.
                 String sqlSelect = "SELECT p.StoreID, p.ProductID, m.ProductName, p.StoreQuantity FROM productInfo p, Merchandise m WHERE m.ProductID = p.ProductID AND p.StoreID =" + store_id;
                 
-                ResultSet rs = statement.executeQuery(sqlSelect);
-                ResultSetMetaData rsmd = rs.getMetaData();
+                rs = statement.executeQuery(sqlSelect);
+                rsmd = rs.getMetaData();
                 int columnsNumber = rsmd.getColumnCount();
                 if(!rs.next()){
                     System.out.println("No results found.");
@@ -246,8 +250,8 @@ jdbcURL = jdbcURL + user;
                 // SQL query that plugs in user inputted data to generate Merchandise Stock report for each product.
                 String sqlSelect = "SELECT p.StoreID, p.ProductID, m.ProductName, p.StoreQuantity FROM productInfo p, Merchandise m WHERE m.ProductID = p.ProductID AND p.ProductID =" + prod_id;
                 
-                ResultSet rs = statement.executeQuery(sqlSelect);
-                ResultSetMetaData rsmd = rs.getMetaData();
+                rs = statement.executeQuery(sqlSelect);
+                rsmd = rs.getMetaData();
                 int columnsNumber = rsmd.getColumnCount();
 
                 if(!rs.next()){
@@ -405,10 +409,8 @@ jdbcURL = jdbcURL + user;
 
         
 } finally {
-    // close(rsmd);
-    // close(rs);
     close(result);
-    // close(rs);
+    close(rs);
     close(statement);
     close(connection);
     }
@@ -438,11 +440,5 @@ static void close(Connection connection) {
             } catch(Throwable whatever) {}
         }
     }
-    // static void close(ResultSetMetaData result) {
-    //     if(rsmd != null) {
-    //         try {
-    //         rsmd.close();
-    //         } catch(Throwable whatever) {}
-    //     }
-    // }
-    }
+
+   }
