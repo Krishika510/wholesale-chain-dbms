@@ -237,8 +237,9 @@ jdbcURL = jdbcURL + user;
                 System.out.println("Wrong transaction ID/ProductID. Please check again.");
                 return;
             }
+            else{
 
-            while (resultCheck.next()) {
+            //while (resultCheck.next()) {
                 System.out.println(resultCheck.next());
                     int earlierReturn = resultCheck.getInt("ReturnQuantity");
                     int prodSellQty = resultCheck.getInt("ProdSellQty");
