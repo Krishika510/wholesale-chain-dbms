@@ -240,7 +240,7 @@ jdbcURL = jdbcURL + user;
             else{
 
             //while (resultCheck.next()) {
-                System.out.println(resultCheck.next());
+                //System.out.println(resultCheck.next());
                     int earlierReturn = resultCheck.getInt("ReturnQuantity");
                     int prodSellQty = resultCheck.getInt("ProdSellQty");
 
